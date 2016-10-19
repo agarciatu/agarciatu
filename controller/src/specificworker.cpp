@@ -57,7 +57,7 @@ void SpecificWorker::compute()
         RoboCompLaser::TLaserData ldata = laser_proxy->getLaserData();  //read laser data 
         std::sort( ldata.begin()+5, ldata.end()-5, [](RoboCompLaser::TData a, RoboCompLaser::TData b){ return     a.dist < b.dist; }) ;  //sort laser data from small to large distances using a lambda function.
 
-        if(target.active==true){
+        
 
 //     if( ldata[6].dist < threshold)
 //     {
@@ -79,64 +79,66 @@ void SpecificWorker::compute()
 //	}
  
   
-//  if(target.active==true){
-    float x,z,a,modulo,angulo;
-    QVec poseAux;
-
+  if(target.active==true){
+    float x,z,a,modulo,angulo, valorAbsoluto;
+    bool giro = true;
     
+    //Obtenemos x,z alpha del robot
     RoboCompDifferentialRobot::TBaseState bState;
     differentialrobot_proxy->getBaseState(bState);
     x=bState.x;
     z=bState.z;
     a=bState.alpha;
     
-   poseAux= target.getPose();
-   
-   poseAux[0] = poseAux.x()-bState.x;
-   poseAux[1] = poseAux.z()-bState.z;
-   
-   modulo=sqrt((poseAux.x()*poseAux.x())+(poseAux.z()*poseAux.z()));
+   //Calculamos distancia entre coordenadas del robot y el click
+   float distancia[2];
+   distancia[0] = (target.getPose().x() - x);
+   distancia[1] = (target.getPose().z() - z);
+   modulo= sqrt((distancia[0]*distancia[0]) + (distancia[1]*distancia[1]));
 
-    
+    //Matriz senoidal
     float R [2][2];
     R[0][0]=cos(a);
     R[0][1]=-sin(a);
     R[1][0]=sin(a);
     R[1][1]=cos(a);
     
-    float T [2];
-    T[0]=poseAux.x();
-    T[1]=poseAux.z();
-    
-    float W [2];
-    T[0]=x;
-    T[1]=z;
-    
+    //Calculamos el angulo entre los puntos
     float Y[2];
-    Y[0]= ((R[0][0]*W[0]) + (R[0][1]*W[1])) + T[0];
-    Y[1]= ((R[1][0]*W[0]) + (R[1][1]*W[1])) + T[1];
-    
+    Y[0]= (R[0][0]*distancia[0]) + (R[0][1]*distancia[1]);
+    Y[1]= (R[1][0]*distancia[0]) + (R[1][1]*distancia[1]);
     angulo=atan2(Y[0],Y[1]);
     
-     if( ldata[6].dist < threshold)
-    {
-      if(ldata[6].angle > 0){
-	std::cout << ldata.front().dist << std::endl;
-	differentialrobot_proxy->setSpeedBase(modulo,angulo);  
-	usleep(rand()%(1500000-100000 + 1) + 100000);  //random wait between 1.5s and 0.1sec
+    //Calculamos el valor absoluto del angulo
+    valorAbsoluto=abs(angulo);
     
-      }else{
-	std::cout << ldata.front().dist << std::endl;
-        differentialrobot_proxy->setSpeedBase(modulo, -angulo);
-        usleep(rand()%(1500000-100000 + 1) + 100000);  //random wait between 1.5s and 0.1sec
+    if(giro){
+      differentialrobot_proxy->setSpeedBase(200,0);
+      if(modulo < threshold){
+	differentialrobot_proxy->stopBase();
+	giro =false;
+	target.setActive(false);
       }
-    }else
+    }else{
+      
+      if(valorAbsoluto > rot)
     {
-        differentialrobot_proxy->setSpeedBase(200, 0); 
-    }
+      differentialrobot_proxy->setSpeedBase(0,angulo);
      
-   }
-     }
+    }else{
+      differentialrobot_proxy->stopBase();
+      giro = true;
+    }
+    }
+    
+    
+	}
+	
+	
+	
+	
+	
+    }
     catch(const Ice::Exception &ex)
     {
         std::cout << ex << std::endl;
