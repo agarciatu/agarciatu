@@ -25,59 +25,67 @@
 
 
 
-
-
-
 #ifndef SPECIFICWORKER_H
 #define SPECIFICWORKER_H
 
 #include <genericworker.h>
 #include <innermodel/innermodel.h>
-#include <qmat/QMatAll>
+#include <simplifypath/simplifyPath.h>
 
 
 class SpecificWorker : public GenericWorker
 {
-  	
-Q_OBJECT
-public:
-	SpecificWorker(MapPrx& mprx);	
-	~SpecificWorker();
-	bool setParams(RoboCompCommonBehavior::ParameterList params);
-	void setPick(const Pick &myPick);
+ Q_OBJECT
 
-public slots:
-	void compute(); 
+	public:
+		SpecificWorker(MapPrx& mprx);	
+		~SpecificWorker();
+		bool setParams(RoboCompCommonBehavior::ParameterList params);
+		void setPick(const Pick &mypick);
 
-private:
-  struct Target
-  	{
-	 bool active=false;
-	 QMutex m;
-	 QVec pose;
-	
-	  void setActive(bool v){
-	    QMutexLocker ml(&m);
-	    active=v;
-	  }
-	  
-	  void copy(float x,float z){
-	   QMutexLocker ml(&m);
-	   pose[0]=x;
-	   pose[1]=z;
-	  }
-	  
-	  QVec getPose(){
-	    QMutexLocker ml(&m);
-	    return pose;
-	  }
-	    
+	public slots:
+		void compute(); 	
+
+	private:    
+		enum class State {INIT,GOTO,BUG,END, BUGINIT};
+		struct Target
+		{
+			mutable QMutex m;
+			QVec pose = QVec::zeros(3);
+			float angl;
+			bool active = false;
+			void setActive(bool newActive)
+			{
+				QMutexLocker lm(&m);
+				active = newActive;
+			}
+			void copy(float x, float z)
+			{
+				QMutexLocker lm(&m);
+				pose.setItem(0,x);
+				pose.setItem(1,0);
+				pose.setItem(2,z);
+			}
+			QVec getPose()
+			{
+				QMutexLocker lm(&m);
+				return pose;
+			}
+		};
+		InnerModel* innerModel;
+		State state = State::INIT;
+		Target pick;
+		QLine2D linea;
+		float distanciaAnterior;
+		void dodge(int threshold,RoboCompLaser::TLaserData ldata);
+		void move(const TLaserData &tLaser);
+		bool obstacle(TLaserData tLaser);
+		void bug( const TLaserData& ldata, const TBaseState& bState );
+		bool targetAtSight(TLaserData ldata);
+		void buginit( const TLaserData& ldata, const TBaseState& bState );
+		void stopRobot();
+		float obstacleLeft( const TLaserData& tlaser);
+		float distanceToLine(const TBaseState& bState);
 	};
-
-  
-  Target target;
 	
-};
-
 #endif
-
