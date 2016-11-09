@@ -28,9 +28,8 @@
 
 #include <CommonBehavior.h>
 #include <GotoPoint.h>
-#include <Laser.h>
-#include <RCISMousePicker.h>
 #include <DifferentialRobot.h>
+#include <AprilTags.h>
 
 
 
@@ -42,9 +41,8 @@ typedef map <string,::IceProxy::Ice::Object*> MapPrx;
 using namespace std;
 
 using namespace RoboCompGotoPoint;
-using namespace RoboCompLaser;
-using namespace RoboCompRCISMousePicker;
 using namespace RoboCompDifferentialRobot;
+using namespace RoboCompAprilTags;
 
 
 
@@ -68,13 +66,9 @@ public:
 	
 
 	DifferentialRobotPrx differentialrobot_proxy;
-	LaserPrx laser_proxy;
+	GotoPointPrx gotopoint_proxy;
 
-	virtual void go(const string &nodo, const float x, const float y, const float alpha) = 0;
-	virtual void turn(const float speed) = 0;
-	virtual bool atTarget() = 0;
-	virtual void stop() = 0;
-	virtual void setPick(const Pick &myPick) = 0;
+	virtual void newAprilTag(const tagsList &tags) = 0;
 
 
 protected:

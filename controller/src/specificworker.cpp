@@ -251,7 +251,7 @@ void SpecificWorker::stopRobot()
 
 bool SpecificWorker::obstacle ( TLaserData tLaser )
 {
-	const int offset = 30;
+	const int offset = 35;
 	const int minDist = 350;
 	
 	//sort laser data from small to large distances using a lambda function.
@@ -270,6 +270,32 @@ void SpecificWorker::setPick ( const Pick &mypick )
     pick.setActive ( true );
     state = State::INIT;
 }
+
+bool SpecificWorker::atTarget()
+{
+
+}
+void SpecificWorker::dodge(int threshold, TLaserData ldata)
+{
+
+}
+void SpecificWorker::go(const string& nodo, const float x, const float y, const float alpha)
+{
+      qDebug() << "New target selected: " << x << y;
+    pick.copy ( x, y );
+    pick.setActive ( true );
+    state = State::INIT;
+
+}
+void SpecificWorker::stop()
+{
+
+}
+void SpecificWorker::turn(const float speed)
+{
+
+}
+
 
 
 

@@ -18,11 +18,11 @@
  */
 
 
-/** \mainpage RoboComp::MyFirstComp
+/** \mainpage RoboComp::segundoComponente
  *
  * \section intro_sec Introduction
  *
- * The MyFirstComp component...
+ * The segundoComponente component...
  *
  * \section interface_sec Interface
  *
@@ -34,7 +34,7 @@
  * ...
  *
  * \subsection install2_ssec Compile and install
- * cd MyFirstComp
+ * cd segundoComponente
  * <br>
  * cmake . && make
  * <br>
@@ -52,7 +52,7 @@
  *
  * \subsection execution_ssec Execution
  *
- * Just: "${PATH_TO_BINARY}/MyFirstComp --Ice.Config=${PATH_TO_CONFIG_FILE}"
+ * Just: "${PATH_TO_BINARY}/segundoComponente --Ice.Config=${PATH_TO_CONFIG_FILE}"
  *
  * \subsection running_ssec Once running
  *
@@ -80,13 +80,11 @@
 #include "specificmonitor.h"
 #include "commonbehaviorI.h"
 
-#include <gotopointI.h>
-#include <rcismousepickerI.h>
+#include <apriltagsI.h>
 
-#include <DifferentialRobot.h>
-#include <Laser.h>
-#include <RCISMousePicker.h>
 #include <GotoPoint.h>
+#include <AprilTags.h>
+#include <DifferentialRobot.h>
 
 
 // User includes here
@@ -95,17 +93,16 @@
 using namespace std;
 using namespace RoboCompCommonBehavior;
 
-using namespace RoboCompDifferentialRobot;
-using namespace RoboCompLaser;
-using namespace RoboCompRCISMousePicker;
 using namespace RoboCompGotoPoint;
+using namespace RoboCompAprilTags;
+using namespace RoboCompDifferentialRobot;
 
 
 
-class MyFirstComp : public RoboComp::Application
+class segundoComponente : public RoboComp::Application
 {
 public:
-	MyFirstComp (QString prfx) { prefix = prfx.toStdString(); }
+	segundoComponente (QString prfx) { prefix = prfx.toStdString(); }
 private:
 	void initialize();
 	std::string prefix;
@@ -115,14 +112,14 @@ public:
 	virtual int run(int, char*[]);
 };
 
-void ::MyFirstComp::initialize()
+void ::segundoComponente::initialize()
 {
 	// Config file properties read example
 	// configGetString( PROPERTY_NAME_1, property1_holder, PROPERTY_1_DEFAULT_VALUE );
 	// configGetInt( PROPERTY_NAME_2, property1_holder, PROPERTY_2_DEFAULT_VALUE );
 }
 
-int ::MyFirstComp::run(int argc, char* argv[])
+int ::segundoComponente::run(int argc, char* argv[])
 {
 #ifdef USE_QTGUI
 	QApplication a(argc, argv);  // GUI application
@@ -143,7 +140,7 @@ int ::MyFirstComp::run(int argc, char* argv[])
 	int status=EXIT_SUCCESS;
 
 	DifferentialRobotPrx differentialrobot_proxy;
-	LaserPrx laser_proxy;
+	GotoPointPrx gotopoint_proxy;
 
 	string proxy, tmp;
 	initialize();
@@ -168,19 +165,19 @@ int ::MyFirstComp::run(int argc, char* argv[])
 
 	try
 	{
-		if (not GenericMonitor::configGetString(communicator(), prefix, "LaserProxy", proxy, ""))
+		if (not GenericMonitor::configGetString(communicator(), prefix, "GotoPointProxy", proxy, ""))
 		{
-			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy LaserProxy\n";
+			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy GotoPointProxy\n";
 		}
-		laser_proxy = LaserPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
+		gotopoint_proxy = GotoPointPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
 	}
 	catch(const Ice::Exception& ex)
 	{
 		cout << "[" << PROGRAM_NAME << "]: Exception: " << ex;
 		return EXIT_FAILURE;
 	}
-	rInfo("LaserProxy initialized Ok!");
-	mprx["LaserProxy"] = (::IceProxy::Ice::Object*)(&laser_proxy);//Remote server proxy creation example
+	rInfo("GotoPointProxy initialized Ok!");
+	mprx["GotoPointProxy"] = (::IceProxy::Ice::Object*)(&gotopoint_proxy);//Remote server proxy creation example
 
 	IceStorm::TopicManagerPrx topicManager = IceStorm::TopicManagerPrx::checkedCast(communicator()->propertyToProxy("TopicManager.Proxy"));
 
@@ -215,38 +212,26 @@ int ::MyFirstComp::run(int argc, char* argv[])
 
 
 
-		// Server adapter creation and publication
-		if (not GenericMonitor::configGetString(communicator(), prefix, "GotoPoint.Endpoints", tmp, ""))
-		{
-			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy GotoPoint";
-		}
-		Ice::ObjectAdapterPtr adapterGotoPoint = communicator()->createObjectAdapterWithEndpoints("GotoPoint", tmp);
-		GotoPointI *gotopoint = new GotoPointI(worker);
-		adapterGotoPoint->add(gotopoint, communicator()->stringToIdentity("gotopoint"));
-		adapterGotoPoint->activate();
-		cout << "[" << PROGRAM_NAME << "]: GotoPoint adapter created in port " << tmp << endl;
-
-
 
 
 
 		// Server adapter creation and publication
-		if (not GenericMonitor::configGetString(communicator(), prefix, "RCISMousePickerTopic.Endpoints", tmp, ""))
+		if (not GenericMonitor::configGetString(communicator(), prefix, "AprilTagsTopic.Endpoints", tmp, ""))
 		{
-			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy RCISMousePickerProxy";
+			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy AprilTagsProxy";
 		}
-		Ice::ObjectAdapterPtr RCISMousePicker_adapter = communicator()->createObjectAdapterWithEndpoints("rcismousepicker", tmp);
-		RCISMousePickerPtr rcismousepickerI_ = new RCISMousePickerI(worker);
-		Ice::ObjectPrx rcismousepicker = RCISMousePicker_adapter->addWithUUID(rcismousepickerI_)->ice_oneway();
-		IceStorm::TopicPrx rcismousepicker_topic;
-		if(!rcismousepicker_topic){
+		Ice::ObjectAdapterPtr AprilTags_adapter = communicator()->createObjectAdapterWithEndpoints("apriltags", tmp);
+		AprilTagsPtr apriltagsI_ = new AprilTagsI(worker);
+		Ice::ObjectPrx apriltags = AprilTags_adapter->addWithUUID(apriltagsI_)->ice_oneway();
+		IceStorm::TopicPrx apriltags_topic;
+		if(!apriltags_topic){
 		try {
-			rcismousepicker_topic = topicManager->create("RCISMousePicker");
+			apriltags_topic = topicManager->create("AprilTags");
 		}
 		catch (const IceStorm::TopicExists&) {
 		//Another client created the topic
 		try{
-			rcismousepicker_topic = topicManager->retrieve("RCISMousePicker");
+			apriltags_topic = topicManager->retrieve("AprilTags");
 		}
 		catch(const IceStorm::NoSuchTopic&)
 		{
@@ -254,9 +239,9 @@ int ::MyFirstComp::run(int argc, char* argv[])
 			}
 		}
 		IceStorm::QoS qos;
-		rcismousepicker_topic->subscribeAndGetPublisher(qos, rcismousepicker);
+		apriltags_topic->subscribeAndGetPublisher(qos, apriltags);
 		}
-		RCISMousePicker_adapter->activate();
+		AprilTags_adapter->activate();
 
 		// Server adapter creation and publication
 		cout << SERVER_FULL_NAME " started" << endl;
@@ -321,7 +306,7 @@ int main(int argc, char* argv[])
 			printf("Configuration prefix: <%s>\n", prefix.toStdString().c_str());
 		}
 	}
-	::MyFirstComp app(prefix);
+	::segundoComponente app(prefix);
 
 	return app.main(argc, argv, configFile.c_str());
 }
