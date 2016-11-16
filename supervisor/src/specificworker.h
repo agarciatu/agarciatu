@@ -50,17 +50,19 @@ private:
 	mutable QMutex m;
 	QVec pose = QVec::zeros(3);
 	int id;
+	QVec poseAnt;
 	InnerModel *inner;
 	void init(InnerModel *innermodel)
 	{
 	  inner = innermodel;
 	}
-	void copy(float x, float z, int id)
+	void copy(float x, float z, int id_)
 	{
 		QMutexLocker lm(&m);
 		qDebug() << "en la camara " << x << z;
 		pose = inner->transform("world", QVec::vec3(x,0,z),"rgbd");
 		qDebug() << "en el mundo " << pose.x() << pose.z();	
+		id = id_;
 	}
 	QVec getPose()
 	{
@@ -71,6 +73,13 @@ private:
 	{
 	  QMutexLocker lm(&m);
 	  return id;
+	}
+	bool changed()
+	{
+	  QMutexLocker lm(&m);
+	  float d = (pose - poseAnt).norm2();
+	  poseAnt = pose;
+	  return d > 100;
 	}
   };
   

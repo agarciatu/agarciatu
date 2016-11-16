@@ -5,7 +5,7 @@ GotoPoint.Endpoints=tcp -p 11100
 
 # Endpoints for subscriptions
 RCISMousePickerTopic.Endpoints=tcp -p 10005
-S
+
 
 # Proxies for required interfaces
 DifferentialRobotProxy = differentialrobot:tcp -h localhost -p 10004

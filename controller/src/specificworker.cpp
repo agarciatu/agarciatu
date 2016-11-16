@@ -34,7 +34,7 @@ SpecificWorker::~SpecificWorker()
 
 bool SpecificWorker::setParams ( RoboCompCommonBehavior::ParameterList params )
 {
-	innerModel= new InnerModel ( "/home/agc/robocomp/files/innermodel/simpleworld.xml" );
+	innerModel= new InnerModel ( "/home/robocomp/robocomp/files/innermodel/simpleworld.xml" );
 	timer.start(Period);
 	return true;
 }
@@ -90,7 +90,8 @@ void SpecificWorker::move( const TLaserData &tLaser )
 	float distance = tr.norm2();
 
 	//Check if already at target
-	if ( distance <= 85 )
+	qDebug() << "dist to targert" << distance;
+	if ( distance <= 700 )
 	{
 		pick.setActive ( false );
 		qDebug() << "FINISH: GOTO TO INIT";

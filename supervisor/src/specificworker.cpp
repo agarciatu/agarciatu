@@ -57,28 +57,32 @@ void SpecificWorker::compute()
 	  return;
 	}
 	
-// 	switch(state)
-// 	{
-// 	  case State::SEARCH:
-// 	    if( tag.getID() == current)
-// 	    {
-// 	      differentialrobot_proxy->stopBase();
-// 	      gotopoint_proxy->go("", tag.getPose().x(), tag.getPose().z(),0);
-// 	      state = State::WAIT;
-// 	    }
-// 	    differentialrobot_proxy->setSpeedBase(0,0.3);
-// 	    break;
-// 	    
-// 	  case State::WAIT:
-// 	    if( gotopoint_proxy->atTarget() == true)
-// 	    {
-// 	      differentialrobot_proxy->stopBase();
-// 	      state = State::SEARCH;
-// 	      current = current++%4;
-// 	    }
-// 	    break;
-// 	  
-// 	}
+	switch(state)
+	{
+	  case State::SEARCH:
+	    qDebug() << current << "TAGID" << tag.getID();
+	    if( tag.getID() == current)
+	    {
+	      differentialrobot_proxy->stopBase();
+	      gotopoint_proxy->go("", tag.getPose().x(), tag.getPose().z(),0);
+	      state = State::WAIT;
+	    }
+	    differentialrobot_proxy->setSpeedBase(0,0.3);
+	    break;
+	    
+	  case State::WAIT:
+	    if( gotopoint_proxy->atTarget() == true)
+	    {
+	      differentialrobot_proxy->stopBase();
+	      state = State::SEARCH;
+	      current++%4;
+	    }
+	     
+	    if ( tag.changed() )
+	      gotopoint_proxy->go("", tag.getPose().x(), tag.getPose().z(),0);   
+	    break;
+	  
+	}
 }
 
 void SpecificWorker::newAprilTag(const tagsList& tags)
