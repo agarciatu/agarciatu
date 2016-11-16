@@ -273,15 +273,12 @@ void SpecificWorker::setPick ( const Pick &mypick )
 
 bool SpecificWorker::atTarget()
 {
-
+  return !pick.isActive();
 }
-void SpecificWorker::dodge(int threshold, TLaserData ldata)
-{
 
-}
 void SpecificWorker::go(const string& nodo, const float x, const float y, const float alpha)
 {
-      qDebug() << "New target selected: " << x << y;
+    qDebug() << "New target selected: " << x << y;
     pick.copy ( x, y );
     pick.setActive ( true );
     state = State::INIT;
@@ -289,11 +286,12 @@ void SpecificWorker::go(const string& nodo, const float x, const float y, const 
 }
 void SpecificWorker::stop()
 {
-
+  differentialrobot_proxy->stopBase();
 }
+
 void SpecificWorker::turn(const float speed)
 {
-
+  differentialrobot_proxy->setSpeedBase(0, speed);
 }
 
 

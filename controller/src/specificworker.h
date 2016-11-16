@@ -64,6 +64,10 @@ class SpecificWorker : public GenericWorker
 				QMutexLocker lm(&m);
 				active = newActive;
 			}
+			bool isActive()
+			{
+			  return active;
+			}
 			void copy(float x, float z)
 			{
 				QMutexLocker lm(&m);

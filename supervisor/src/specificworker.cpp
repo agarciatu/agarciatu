@@ -41,8 +41,6 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 
 	
 	timer.start(Period);
-	
-
 	return true;
 }
 
@@ -59,6 +57,14 @@ void SpecificWorker::compute()
 // 		std::cout << "Error reading from Camera" << e << std::endl;
 // 	}
 }
+
+void SpecificWorker::newAprilTag(const tagsList& tags)
+{
+  qDebug() << tags.front().id;
+  
+  
+}
+
 
 
 

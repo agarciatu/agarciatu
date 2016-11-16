@@ -1,11 +1,11 @@
 CommonBehavior.Endpoints=tcp -p 11111
 
 # Endpoints for implemented interfaces
-GotoPoint.Endpoints=tcp -p 12100
+GotoPoint.Endpoints=tcp -p 11100
 
 # Endpoints for subscriptions
 RCISMousePickerTopic.Endpoints=tcp -p 10005
-
+S
 
 # Proxies for required interfaces
 DifferentialRobotProxy = differentialrobot:tcp -h localhost -p 10004
@@ -22,4 +22,7 @@ Ice.Trace.Protocol=0
 Ice.ACM.Client=10
 Ice.ACM.Server=10
 
+CameraName = rgbd
+InnerModelPath = /home/agc/robocomp/files/innemodel/simpleworld.xml
+Interface = RGBD
 
