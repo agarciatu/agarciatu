@@ -23,11 +23,6 @@
 */
 
 
-
-
-
-
-
 #ifndef SPECIFICWORKER_H
 #define SPECIFICWORKER_H
 
@@ -48,6 +43,41 @@ public slots:
 	void compute(); 	
 
 private:
+  InnerModel *innerModel;
+  
+  struct Tag
+  {
+	mutable QMutex m;
+	QVec pose = QVec::zeros(3);
+	int id;
+	InnerModel *inner;
+	void init(InnerModel *innermodel)
+	{
+	  inner = innermodel;
+	}
+	void copy(float x, float z, int id)
+	{
+		QMutexLocker lm(&m);
+		qDebug() << "en la camara " << x << z;
+		pose = inner->transform("world", QVec::vec3(x,0,z),"rgbd");
+		qDebug() << "en el mundo " << pose.x() << pose.z();	
+	}
+	QVec getPose()
+	{
+		QMutexLocker lm(&m);
+		return pose;
+	}
+	int getID()
+	{
+	  QMutexLocker lm(&m);
+	  return id;
+	}
+  };
+  
+  Tag tag;
+  enum class State {SEARCH, WAIT};
+  State state = State::SEARCH;
+  int current = 0;
 	
 };
 
