@@ -34,7 +34,7 @@ SpecificWorker::~SpecificWorker()
 
 bool SpecificWorker::setParams ( RoboCompCommonBehavior::ParameterList params )
 {
-	innerModel= new InnerModel ( "/home/robocomp/robocomp/files/innermodel/simpleworld.xml" );
+	innerModel= new InnerModel ( "/home/agc/robocomp/files/innermodel/simpleworld.xml" );
 	timer.start(Period);
 	return true;
 }
@@ -81,7 +81,6 @@ void SpecificWorker::compute()
 			std::cout << ex << std::endl;
 		}
 }
-
 void SpecificWorker::move( const TLaserData &tLaser )
 {
 	QVec tr = innerModel->transform ( "base",pick.getPose(),"world" );
@@ -91,7 +90,7 @@ void SpecificWorker::move( const TLaserData &tLaser )
 
 	//Check if already at target
 	qDebug() << "dist to targert" << distance;
-	if ( distance <= 700 )
+	if ( distance <= 300 )
 	{
 		pick.setActive ( false );
 		qDebug() << "FINISH: GOTO TO INIT";
@@ -187,7 +186,7 @@ bool SpecificWorker::targetAtSight ( TLaserData ldata )
 	}
 	QVec targetInRobot = innerModel->transform("base", pick.getPose(), "world");
 	float dist = targetInRobot.norm2();
-	int veces = int(dist / 200);  //number of times the robot semilength fits in the robot-to-target distance
+	int veces = int(dist / 150);  //number of times the robot semilength fits in the robot-to-target distance
 	float landa = 1./veces;
 	
 	QList<QPoint> points;
@@ -253,7 +252,7 @@ void SpecificWorker::stopRobot()
 bool SpecificWorker::obstacle ( TLaserData tLaser )
 {
 	const int offset = 35;
-	const int minDist = 350;
+	const int minDist = 200;
 	
 	//sort laser data from small to large distances using a lambda function.
 	std::sort ( tLaser.begin() + offset, tLaser.end()- offset, [] ( RoboCompLaser::TData a, RoboCompLaser::TData b ){	return a.dist < b.dist;});

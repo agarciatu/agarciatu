@@ -48,8 +48,9 @@ private:
   struct Tag
   {
 	mutable QMutex m;
-	QVec pose = QVec::zeros(3);
-	int id;
+	//QVec pose = QVec::zeros(3);
+	QVec pose;
+	int id = 0;
 	QVec poseAnt;
 	InnerModel *inner;
 	void init(InnerModel *innermodel)

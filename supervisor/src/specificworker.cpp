@@ -1,4 +1,4 @@
-/*
+1/*
  *    Copyright (C) 2016 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
@@ -36,7 +36,8 @@ SpecificWorker::~SpecificWorker()
 
 bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 {
-	innerModel= new InnerModel ( "/home/robocomp/robocomp/files/innermodel/simpleworld.xml" );
+	current = 0;
+	innerModel= new InnerModel ( "/home/agc/robocomp/files/innermodel/simpleworld.xml" );
 	tag.init(innerModel);
 	
 	timer.start(Period);
@@ -66,20 +67,20 @@ void SpecificWorker::compute()
 	      differentialrobot_proxy->stopBase();
 	      gotopoint_proxy->go("", tag.getPose().x(), tag.getPose().z(),0);
 	      state = State::WAIT;
+	    }else{
+	      gotopoint_proxy->turn(0.3);
 	    }
-	    differentialrobot_proxy->setSpeedBase(0,0.3);
+	   // differentialrobot_proxy->setSpeedBase(0,0.3);
 	    break;
 	    
 	  case State::WAIT:
 	    if( gotopoint_proxy->atTarget() == true)
 	    {
 	      differentialrobot_proxy->stopBase();
+	       current=(current+1)%4;
 	      state = State::SEARCH;
-	      current++%4;
-	    }
-	     
-	    if ( tag.changed() )
-	      gotopoint_proxy->go("", tag.getPose().x(), tag.getPose().z(),0);   
+	    }else if ( tag.changed() )
+	     // gotopoint_proxy->go("", tag.getPose().x(), tag.getPose().z(),0);   
 	    break;
 	  
 	}

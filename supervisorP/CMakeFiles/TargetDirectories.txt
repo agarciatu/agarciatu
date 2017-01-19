@@ -1,0 +1,3 @@
+/home/agc/robocomp/components/agarciatu/supervisorP/CMakeFiles/edit_cache.dir
+/home/agc/robocomp/components/agarciatu/supervisorP/CMakeFiles/rebuild_cache.dir
+/home/agc/robocomp/components/agarciatu/supervisorP/CMakeFiles/ui_mainUI.dir
