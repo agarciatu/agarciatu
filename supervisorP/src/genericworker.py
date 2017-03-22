@@ -18,7 +18,6 @@
 
 import sys
 from PySide import *
-
 try:
 	from ui_mainUI import *
 except:
@@ -34,9 +33,13 @@ class GenericWorker(QtGui.QWidget):
 		super(GenericWorker, self).__init__()
 
 
-		self.differentialrobot_proxy = mprx["DifferentialRobotProxy"]
 		self.gotopoint_proxy = mprx["GotoPointProxy"]
+		self.differentialrobot_proxy = mprx["DifferentialRobotProxy"]
 
+		self.ui = Ui_guiDlg()
+		self.ui.setupUi(self)
+		self.show()
+		
 		
 		self.mutex = QtCore.QMutex(QtCore.QMutex.Recursive)
 		self.Period = 30
