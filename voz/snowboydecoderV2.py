@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+#Hola
 import collections
 import pyaudio
 import snowboydetect
